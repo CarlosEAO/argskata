@@ -16,9 +16,9 @@ bool isnumeric(string s){
 }
 
 int main(){
-    
 
     map<char, string> schema;
+    
     schema['b'] = "false";//bool
     schema['i'] = "0";//int
     schema['s'] = "";//string
@@ -52,12 +52,12 @@ int main(){
                     schema[flag] = "true";
                     break;
                 case 'i': case 'n':
-                    type = 2;
+                    type = 1;
                     needFlag = false;
                     cout << "ITS A VALID FLAG"<<endl;
                     break;
                 case 's':
-                    type = 3;
+                    type = 2;
                     needFlag = false;
                     cout << "ITS A VALID FLAG"<<endl;
                     break;
