@@ -25,10 +25,9 @@ vector<string> splitSpace(string s){
     } while (end != -1);
     return tokens;
 }
-class Parser{
-    public:
-        enum Type{INT, STRING, BOOL};
+class Parser{        
     private:
+        enum Type{INT, STRING, BOOL};
         string args;
         unordered_map<char, Type> schema;
         vector<string> tokens;
@@ -77,12 +76,23 @@ class Parser{
                 }
             }
         }
+        template <typename T> void printFlags(T flags){
+            for(auto flag:flags){
+                cout << "flag " << flag.first << " value " << flag.second << endl;
+            }
+        }
+        void printBooleanFlags(){
+            printFlags(booleanFlags);
+        }
+        void printIntFlags(){
+            printFlags(intFlags);
+        }
+        void printStringFlags(){
+            printFlags(stringFlags);
+        }
     
     public:
-        struct Flag {
-            char identifier; // The character identifier (e.g., 'i')
-            Type type;      // The type, but we will use it internally
-        };
+        Parser(){}
         void addBooleanFlag(char identifier){
             addFlag(identifier, BOOL);
         }
@@ -92,25 +102,21 @@ class Parser{
         void addStringFlag(char identifier){
             addFlag(identifier, STRING);
         }
-        Parser(vector<pair<int, Type>> flags){
-            for( auto flag:flags){
-                addFlag(flag.first, flag.second);
-            }
-        }
+        
         void getArgs(){
                 cout << "Introduce args string: "<<endl;
                 getline (cin, this->args);
         }
-        void parseArgs(string args){
+        void parseArgs(){
             vector<string> tokens = splitSpace(args);
             bool expectingFlag = true;
             Type type;
             char flag;
-            for (int i=0; i<tokens.size(); i++){
-                cout <<"token is "<< tokens[i] << endl;
+            for (auto token:tokens){
+                cout <<"token is "<< token << endl;
                 //This indicates we have a flag (starts with -, not a number and size 1)
-                if(expectingFlag && tokens[i][0] == '-' && !isnumeric(tokens[i]) && tokens[i].size()==2){
-                    flag = tokens[i][1];
+                if(expectingFlag && token[0] == '-' && !isnumeric(token) && token.size()==2){
+                    flag = token[1];
                     if(booleanFlags.count(flag)){
                         cout << "ITS A VALID FLAG"<<endl;
                         this->booleanFlags[flag] = true;
@@ -126,7 +132,7 @@ class Parser{
                         cout << "ITS A VALID FLAG"<<endl;
                     }
                     else{
-                        cout << "UNKNOWN FLAG " << tokens[i][1]<<endl;
+                        cout << "UNKNOWN FLAG " << token[1]<<endl;
                     }
                             
                 }
@@ -134,13 +140,13 @@ class Parser{
                     expectingFlag = true;
                     switch (type){
                         case INT:
-                            if(isnumeric(tokens[i]))
-                                this->intFlags[flag] = stoi(tokens[i]);
+                            if(isnumeric(token))
+                                this->intFlags[flag] = stoi(token);
                             else
                                 cout << "flag -" <<flag << " expects numeric value"<<endl; 
                             break;
                         case STRING:
-                            stringFlags[flag] = tokens[i];
+                            stringFlags[flag] = token;
                             break;
                     }
                 }
@@ -150,28 +156,19 @@ class Parser{
             }
         }
 
-        void parseArgs(){
-            this->parseArgs(args);
-        }
-
-        void printArgs(){
-            cout<<"Boolean Flags: "<<endl;
-            for(auto flag:booleanFlags){
-                cout << "flag " << flag.first << " value " << flag.second << endl;
-            }
-            cout<<"Integer Flags: "<<endl;
-            for(auto flag:intFlags){
-                cout << "flag " << flag.first << " value " << flag.second << endl;
-            }
-            cout<<"String Flags: "<<endl;
-            for(auto flag:stringFlags){
-                cout << "flag " << flag.first << " value " << flag.second << endl;
-            }
+        void printFlagValues(){   
+            cout<<"BOOLEAN Flags: "<<endl;
+            printBooleanFlags();
+            cout<<"INTEGER Flags: "<<endl;
+            printIntFlags();
+            cout<<"STRING Flags: "<<endl;
+            printStringFlags();
         }
 };
 
 int main(){
-    Parser parser({{'i', Parser::INT}});
+    Parser parser;
+    parser.addIntFlag('i');
     parser.addIntFlag('n');
     parser.addBooleanFlag('b');
     parser.addBooleanFlag('f');
@@ -180,7 +177,7 @@ int main(){
 
     parser.getArgs();
     parser.parseArgs();
-    parser.printArgs();
+    parser.printFlagValues();
 
     return 0;
 }
